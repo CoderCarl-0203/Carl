@@ -1,0 +1,148 @@
+import datetime
+import random
+
+# Asking for the player's name in a narrative style
+player_name = input("You hear a faint voice echoing in the dark... 'What is your name, traveler?' ")
+
+# Welcoming the player with the name they provided
+print(f"Welcome, {player_name}, to the Maze of Death.")
+print('___________________________________________________________________________________________ ')
+print(f"                      You are moving in with your grandparents, {player_name}.")
+print("     But on the way there, there was a pot hole on the road and you fell in it.")
+print("         You are trapped in this underground maze and need to find a way out.")
+print("     Find a way out so you can save your grandparents from a heart attack!!!!!")
+print("                                 Timer: 5 minutes")
+
+print('___________________________________________________________________________________________ ')
+print('                 |                                           |')
+print('                 |                                           |')
+print('                 |        WELCOME TO THE MAZE OF DEATH       |')
+print('                 |                                           |')
+print('                 |                                           |')
+print('                 |                    COLUMN                 |')
+print('                 |       0 1 2 3 4 5 6 7 8 9 1 1 1 1 1 1 1   |')
+print('                 |                           0 1 2 3 4 5 6   |')
+print('                 |     0 c c c c c c c c c c c c c c c c c   |')
+print('                 |     1 c . . . c . . . T . . . . . k . c   |')
+print('                 |  R  2 c . . . c . c . c . c . c c c c c   |')
+print('                 |  O  3 c c c . c . c . . . . . . . c . c   |')
+print('                 |  W  4 c . . . . . c c . c . . c . . . e   |')
+print('                 |     5 c c c c c c c c c c c c c c c c c   |')
+print('                 |                                           |')
+print('_________________|___________________________________________|_______________________________ ')
+
+room = [
+  'ccccccccccccccccc',
+  'c...c....T....k.c',
+  'c...c.c.c.c.ccccc',
+  'ccc.c.c.......c.c',
+  'c.....cc.c..c...e',
+  'ccccccccccccccccc',
+]
+
+# Variable to check if the player has the key
+has_key = False
+
+# Function to check if the move is valid
+def is_valid_move(row, col):
+    """Check if the new position is within the bounds of the room and not a wall."""
+    return 0 <= row < len(room) and 0 <= col < len(room[0]) and room[row][col] != 'c'
+
+# Function to handle player movement
+def move(current_row, current_col, direction):
+    new_row = current_row
+    new_col = current_col
+
+    if direction == 'up':
+        new_row -= 1
+    elif direction == 'down':
+        new_row += 1
+    elif direction == 'left':
+        new_col -= 1
+    elif direction == 'right':
+        new_col += 1
+
+    if not is_valid_move(new_row, new_col):
+        print(f"{player_name}, you can't move there! It's a wall or out of bounds.")
+        return current_row, current_col  # Stay in the same position
+
+    return new_row, new_col  # Return new valid po                  sition
+
+# Function to handle the trap (password puzzle)
+def trap_puzzle():
+    print('You enter an empty dark room...')
+    print()  # Skipping a line
+    print('There is something glowing in the corner')
+    print("Hi, you are trapped and there is a door with a lock code on it.")
+    print("On the wall, it shows these words:")
+    print()
+    print("sceptile")
+    print("rattata")
+    print("Bulbasaur")
+    print("charmander")
+    print("pikachu")
+
+    password = random.choice(['pikachu'])
+
+    print(password.upper())  # Show the correct password hint
+    print("\n" * 3)  # Adding some space for better readability
+
+    # Infinite loop to give the player unlimited tries
+    while True:
+        # Ask the player to pick a door
+        door = input("Pick a word (pikachu, squirtle, bulbasaur, charmander, greninja): ").lower()
+
+        # If-elif-else to check which door they chose
+        if door == 'pikachu':
+            print("You made it out!")
+            return  # Escape from the trap
+        else:
+            print("Incorrect! Try again.")  # Allow them to keep trying
+
+# Set the time limit (in seconds)
+time_limit = 300  # 5 minutes
+
+# Record the start time
+start_time = datetime.datetime.now()
+
+# Initial player position
+player_row, player_col = 2, 2
+
+while True:
+    # Check how much time has passed since the start
+    current_time = datetime.datetime.now()
+    time_elapsed = (current_time - start_time).total_seconds()
+
+    # If time exceeds the limit, end the game with a sad message
+    if time_elapsed > time_limit:
+        print(f"Time's up, {player_name}! You took too long to escape and your grandparents... didn't make it. 😢")
+        break
+
+    # Ask for the player's direction choice
+    direction_choice = input(f"{player_name}, what direction would you like to move? (up, down, left, right or 'quit' to exit) ").lower()
+
+
+    # Move the player and update the position
+    player_row, player_col = move(player_row, player_col, direction_choice)
+
+    # Check if the player encountered the trap
+    if room[player_row][player_col] == 'T':
+        print(f"Oh no, {player_name}! You've entered a trap!")
+        trap_puzzle()  # Call the password puzzle function
+
+    # Check if the player found the key
+    if room[player_row][player_col] == 'k' and not has_key:
+        print(f"Congratulations, {player_name}! You found the key!")
+        has_key = True  # Update the key status
+
+    # Print the new row and column
+    print(f'New row is {player_row}')
+    print(f'New col is {player_col}')
+
+    # Check if the player has reached the exit
+    if room[player_row][player_col] == 'e':
+        if has_key:
+            print(f'Congratulations, {player_name}! You escaped the Maze of Death and saved your grandparents!')
+            break
+        else:
+            print(f"{player_name}, you need to find the key before you can escape!")
